@@ -91,7 +91,7 @@ virtual fifo_if fif;
 mailbox #(transaction) mbx;
 
 transaction data;
-event next;
+//event next;
 
 function new(mailbox #(transaction) mbx);
 this.mbx = mbx;
@@ -116,7 +116,7 @@ forever begin
     fif.wr <= data.wr;
     fif.data_in <= data.data_in;
     repeat(2) @(posedge fif.clock);
-    ->next;
+   // ->next;
 end
 endtask
 endclass
@@ -143,7 +143,7 @@ trans = new();
 forever begin
     repeat(2) @(posedge fif.clock) begin
         trans.wr = fif.wr;
-        trans.rd = fif.rd;
+        trans.rd = fif.rd;                                   ///////why non blockin here find out when it is non blocking in driver
         trans.data_in = fif.data_in;
         trans.data_out = fif.data_out;
         trans.full = fif.full;
@@ -190,7 +190,7 @@ forever begin
     if(trans.rd == 1) begin
         if(trans.empty == 0) begin
             temp = din.pop_back();
-            if(trans.data_out == temp)
+            if(trans.data_out == temp)  ///check if data matches
             $display ("DATA MATCH");
             else begin
             $display("[SCO] : FIFO IS EMPTY");
